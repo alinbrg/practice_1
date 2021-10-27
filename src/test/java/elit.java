@@ -2,7 +2,9 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import com.codeborne.selenide.Selenide;
+import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.support.Color;
 
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
@@ -75,17 +77,35 @@ public class elit {
         $(".btn-cart").click();
         $(byText("კალათა ცარიელია")).shouldBe(Condition.visible);
         $("#search_list").setValue("კომპიუტერი");
+
+        Assert.assertEquals("კომპიუტერი", $("#search_list").getValue());
+
         element(".filter-select-list", 2).click();
 
         element(".add_to_cart", 0).click();
 
         $(".btn-cart").click();
-        $(byText("კალათა ცარიელია")).shouldNotBe(Condition.visible);
+
+//        $(byText("კალათა ცარიელია")).shouldNotBe(Condition.visible);
+        Assert.assertTrue($(byText("კალათა ცარიელია")).is(Condition.visible));
 
         element(".fa-trash", 0).click();
         $(byText("კალათა ცარიელია")).shouldBe(Condition.visible);
+
+        $(byText("კალათა ცარიელია")).waitUntil(Condition.visible, 5000);
+
     }
 
+
+    @Test
+    public void colors(){
+        WebDriverManager.chromedriver().setup();
+        Configuration.startMaximized = true;
+        Selenide.open("https://ee.ge/");
+
+        Assert.assertEquals("#FF1E38", Color.fromString($(".search-btn").getCssValue("background-color")).asHex().toUpperCase());
+
+    }
 
     @Test
     public void savedItems(){
@@ -104,11 +124,12 @@ public class elit {
         element(".add_to_cart", 0).click();
 
         $(".btn-cart").click();
-        $(byText("კალათა ცარიელია")).shouldNotBe(Condition.visible);
-
+//        $(byText("კალათა ცარიელია")).shouldNotBe(Condition.visible);
+        Assert.assertFalse($(byText("კალათა ცარიელია")).is(Condition.visible));
         element(".save-icon", 0).click();
         $(byText("შენახული ნივთები")).click();
-        $(byText("ვერ მოიძებნა")).shouldNotBe(Condition.visible);
+//        $(byText("ვერ მოიძებნა")).shouldNotBe(Condition.visible);
+        Assert.assertFalse($(byText("ვერ მოიძებნა")).is(Condition.visible));
 
         $(".btn-cart").click();
         $(byText("კალათა ცარიელია")).shouldBe(Condition.visible);
@@ -117,5 +138,4 @@ public class elit {
         element(".cross_icon", 0).click();
         $(byText("ვერ მოიძებნა")).shouldBe(Condition.visible);
     }
-
 }
